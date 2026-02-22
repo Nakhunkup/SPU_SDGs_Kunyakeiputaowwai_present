@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeSurf AI – Presentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET & BASE ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ocean:   #0077b6;
+      --sky:     #00b4d8;
+      --foam:    #90e0ef;
+      --sand:    #caf0f8;
+      --deep:    #03045e;
+      --accent:  #f77f00;
+      --green:   #2dc653;
+      --white:   #ffffff;
+      --glass:   rgba(255,255,255,0.12);
+      --radius:  18px;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      font-family: 'Prompt', sans-serif;
+      background: #000;
+      overflow: hidden;
+    }
+
+    /* ─── SLIDESHOW CONTAINER ────────────────────────────────────── */
+    .deck { width: 100vw; height: 100vh; position: relative; }
+
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 48px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .55s ease, transform .55s ease;
+      transform: translateX(60px);
+    }
+    .slide.active {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(0);
+    }
+    .slide.exit {
+      opacity: 0; transform: translateX(-60px);
+    }
+
+    /* ─── BACKGROUNDS per slide ──────────────────────────────────── */
+    .bg-cover { background-size: cover; background-position: center; }
+
+    #slide-1 { background: linear-gradient(135deg, #03045e 0%, #0077b6 60%, #00b4d8 100%); }
+    #slide-2 { background: linear-gradient(135deg, #03045e 0%, #023e8a 100%); }
+    #slide-3 { background: linear-gradient(135deg, #0a2342 0%, #0077b6 100%); }
+    #slide-4 { background: linear-gradient(135deg, #012a4a 0%, #014f86 100%); }
+    #slide-5 { background: linear-gradient(135deg, #03045e 0%, #1b4332 100%); }
+    #slide-6 { background: linear-gradient(135deg, #03045e 0%, #6a0572 100%); }
+    #slide-7 { background: linear-gradient(135deg, #012a4a 0%, #0077b6 100%); }
+    #slide-8 { background: linear-gradient(135deg, #03045e 0%, #0d3b66 100%); }
+    #slide-9 { background: linear-gradient(135deg, #001219 0%, #005f73 100%); }
+    #slide-10 { background: linear-gradient(135deg, #03045e 0%, #0077b6 100%); }
+
+    /* ─── WAVES DECORATION ───────────────────────────────────────── */
+    .waves {
+      position: absolute; bottom: 0; left: 0; width: 100%; overflow: hidden;
+      pointer-events: none; z-index: 0;
+    }
+    .waves svg { display: block; }
+
+    /* ─── GLASS CARD ─────────────────────────────────────────────── */
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--radius);
+      padding: 28px 36px;
+    }
+
+    /* ─── TYPOGRAPHY ─────────────────────────────────────────────── */
+    .slide-tag {
+      font-size: .75rem; font-weight: 600; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--foam);
+      margin-bottom: 10px;
+    }
+    h1 { font-size: 3.6rem; font-weight: 800; color: #fff; line-height: 1.1; }
+    h2 { font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 14px; }
+    h3 { font-size: 1.2rem; font-weight: 600; color: var(--foam); }
+    p, li { font-size: 1rem; font-weight: 300; color: rgba(255,255,255,.88); line-height: 1.7; }
+    li { margin-bottom: 6px; }
+
+    /* ─── LOGO / APP NAME ────────────────────────────────────────── */
+    .app-logo {
+      font-size: 5rem; font-weight: 800;
+      background: linear-gradient(90deg, #fff 0%, #90e0ef 50%, #f77f00 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      line-height: 1;
+    }
+    .app-sub {
+      font-size: 1.3rem; font-weight: 300; color: var(--foam);
+      margin-top: 6px;
+    }
+
+    /* ─── PILL BADGE ─────────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 4px 14px; border-radius: 999px;
+      font-size: .8rem; font-weight: 600;
+      background: var(--accent); color: #fff;
+      margin: 4px 4px 0 0;
+    }
+    .badge.blue  { background: var(--sky); }
+    .badge.green { background: var(--green); }
+    .badge.deep  { background: var(--deep); border: 1px solid var(--sky); }
+
+    /* ─── GRID HELPERS ───────────────────────────────────────────── */
+    .grid-2 {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px; width: 100%; max-width: 960px;
+    }
+    .grid-3 {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 16px; width: 100%; max-width: 960px;
+    }
+    .grid-4 {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 14px; width: 100%; max-width: 1000px;
+    }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+
+    /* ─── FEATURE CARD ───────────────────────────────────────────── */
+    .feat-card {
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .feat-icon { font-size: 2rem; }
+    .feat-title { font-weight: 700; font-size: 1rem; color: var(--foam); }
+    .feat-desc  { font-size: .85rem; color: rgba(255,255,255,.8); line-height: 1.55; }
+
+    /* ─── STEP LIST ──────────────────────────────────────────────── */
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .step-list li {
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .step-num {
+      min-width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--accent); color: #fff;
+      font-weight: 700; font-size: .9rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ─── TECH STACK ─────────────────────────────────────────────── */
+    .tech-pill {
+      padding: 8px 18px; border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.25);
+      font-size: .9rem; color: #fff; font-weight: 500;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .tech-row {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; margin-top: 10px;
+    }
+
+    /* ─── IMPACT CARD ────────────────────────────────────────────── */
+    .impact-card {
+      background: rgba(255,255,255,.08);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 20px;
+    }
+    .impact-card.blue  { border-left-color: var(--sky); }
+    .impact-card.green { border-left-color: var(--green); }
+    .impact-card.foam  { border-left-color: var(--foam); }
+
+    /* ─── MEMBER CARD ────────────────────────────────────────────── */
+    .member-card {
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: var(--radius);
+      padding: 20px; text-align: center;
+    }
+    .member-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--sky), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; margin: 0 auto 12px;
+    }
+    .member-name { font-weight: 700; font-size: 1rem; color: #fff; }
+    .member-info { font-size: .82rem; color: var(--foam); margin-top: 4px; }
+
+    /* ─── SLIDE COUNTER & NAVIGATION ────────────────────────────── */
+    .nav {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 18px; z-index: 999;
+    }
+    .nav-btn {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      color: #fff; font-size: 1.3rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,.3); }
+    .counter {
+      color: rgba(255,255,255,.7); font-size: .9rem;
+      font-family: 'Prompt', sans-serif;
+      min-width: 60px; text-align: center;
+    }
+
+    /* ─── DOTS ───────────────────────────────────────────────────── */
+    .dots {
+      position: fixed; right: 28px; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 8px; z-index: 999;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.3); cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+    .dot.active { background: #fff; transform: scale(1.4); }
+
+    /* ─── HEADLINE ROW ───────────────────────────────────────────── */
+    .center { text-align: center; }
+    .content-box { width: 100%; max-width: 900px; }
+    .mt-sm { margin-top: 12px; }
+    .mt-md { margin-top: 24px; }
+
+    /* ─── PROBLEM BOX (slide 3) ──────────────────────────────────── */
+    .prob-row {
+      display: flex; gap: 16px; width: 100%; max-width: 960px; margin-top: 20px;
+    }
+    .prob-card {
+      flex: 1;
+      background: rgba(255, 50, 50, 0.12);
+      border: 1px solid rgba(255,100,100,.25);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+    }
+    .prob-icon { font-size: 2rem; margin-bottom: 8px; }
+    .prob-title { font-weight: 700; color: #ff8c8c; margin-bottom: 6px; }
+    .prob-text  { font-size: .88rem; color: rgba(255,255,255,.85); line-height: 1.6; }
+
+    /* ─── SDG BADGE ──────────────────────────────────────────────── */
+    .sdg-badge {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(0, 100, 60, .25);
+      border: 1px solid #2dc653;
+      border-radius: 999px; padding: 8px 20px;
+      color: #2dc653; font-weight: 700; font-size: 1rem;
+    }
+
+    /* ─── PROGRESS BAR ───────────────────────────────────────────── */
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--sky), var(--accent));
+      transition: width .4s ease;
+      z-index: 1000;
+    }
+
+    /* ─── KEYBOARD HINT ──────────────────────────────────────────── */
+    .kbd-hint {
+      position: fixed; top: 20px; right: 20px;
+      font-size: .72rem; color: rgba(255,255,255,.35);
+      font-family: 'Prompt', sans-serif;
+    }
+
+    /* ─── SLIDE NUMBER BADGE ─────────────────────────────────────── */
+    .slide-number {
+      position: absolute; top: 22px; left: 36px;
+      font-size: .75rem; color: rgba(255,255,255,.3);
+      font-weight: 600; letter-spacing: .1em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="kbd-hint">← → หรือ Space เพื่อเปลี่ยนสไลด์</div>
+
+<!-- DOTS -->
+<div class="dots" id="dots"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLIDE 1 · COVER -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="deck">
+
+  <div class="slide" id="slide-1">
+    <div class="slide-number">01 / 10</div>
+    <div class="waves" style="bottom:-2px">
+      <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg">
+        <path fill="rgba(255,255,255,.06)" d="M0,64L60,69.3C120,75,240,85,360,80C480,75,600,53,720,53.3C840,53,960,75,1080,80C1200,85,1320,75,1380,69.3L1440,64V120H0Z"/>
+        <path fill="rgba(255,255,255,.04)" d="M0,96L80,90.7C160,85,320,75,480,74.7C640,75,800,85,960,85.3C1120,85,1280,75,1360,69.3L1440,64V120H0Z"/>
+      </svg>
+    </div>
+    <div class="center" style="position:relative;z-index:1">
+      <div class="slide-tag">🏆 Competition Entry · ทีม "คุณย่าเคยพูดเอาไว้"</div>
+      <div class="app-logo">SafeSurf AI</div>
+      <div class="app-sub">ระบบเฝ้าระวังภัยชายฝั่งอัจฉริยะ ด้วยพลัง AI &amp; Citizen Science</div>
+      <div style="margin-top:28px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+        <span class="badge blue">🌊 Rip Current Detection</span>
+        <span class="badge">🎐 Jellyfish AI Scanner</span>
+        <span class="badge green">🗺️ Live Eco-Safety Map</span>
+        <span class="badge deep">📡 Citizen Science</span>
+      </div>
+      <div style="margin-top:32px; color:rgba(255,255,255,.45); font-size:.85rem;">
+        โรงเรียนขอนแก่นวิทยายน &nbsp;|&nbsp; ม.4 &nbsp;|&nbsp; 2568
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SLIDE 2 · TEAM -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-2">
+    <div class="slide-number">02 / 10</div>
+    <div class="center content-box">
+      <div class="slide-tag">👥 คณะผู้พัฒนา</div>
+      <h2>ทีม "คุณย่าเคยพูดเอาไว้"</h2>
+      <div class="grid-3 mt-md">
+        <div class="member-card">
+          <div class="member-avatar">👦</div>
+          <div class="member-name">นายภาณุวัฒน์ พิมพ์ตา</div>
+          <div class="member-info">โรงเรียนขอนแก่นวิทยายน</div>
+          <div class="member-info">ม.4</div>
+        </div>
+        <div class="member-card">
+          <div class="member-avatar">👦</div>
+          <div class="member-name">นายชนาธิป กุญแจ</div>
+          <div class="member-info">โรงเรียนขอนแก่นวิทยายน</div>
+          <div class="member-info">ม.4</div>
+        </div>
+        <div class="member-card">
+          <div class="member-avatar">👧</div>
+          <div class="member-name">นางสาวบุณยาพร รามสีดา</div>
+          <div class="member-info">โรงเรียนขอนแก่นวิทยายน</div>
+          <div class="member-info">ม.4</div>
+        </div>
+      </div>
+      <div class="glass mt-md" style="display:flex;align-items:center;gap:16px;max-width:420px;margin:24px auto 0;">
+        <span style="font-size:1.8rem;">👩‍🏫</span>
+        <div>
+          <div style="font-size:.75rem;color:var(--foam);font-weight:600;">อาจารย์ที่ปรึกษา</div>
+          <div style="font-weight:700;color:#fff;font-size:1.1rem;">นางสาวกุนตี ภูพานเพชร</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SLIDE 3 · PROBLEM -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-3">
+    <div class="slide-number">03 / 10</div>
+    <div class="center content-box">
+      <div class="slide-tag">⚠️ ที่มาและปัญหา</div>
+      <h2>"ภัยเงียบ" ที่ซ่อนอยู่ใต้ผิวน้ำ</h2>
+      <div class="prob-row">
+        <div class="prob-card">
+          <div class="prob-icon">🌀</div>
+          <div class="prob-title">กระแสน้ำดูดออก (Rip Current)</div>
+          <div class="prob-text">สาเหตุอันดับ 1 ของการจมน้ำเสียชีวิตริมหาดทั่วโลก ตาเปล่าแยกแยะได้ยากมากสำหรับคนทั่วไป</div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-icon">🎐</div>
+          <div class="prob-title">แมงกะพรุนพิษ</div>
+          <div class="prob-text">แมงกะพรุนกล่องระบาดเพิ่มตามอุณหภูมิน้ำ นักท่องเที่ยวขาดเครื่องมือระบุชนิดและวิธีปฐมพยาบาล</div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-icon">📊</div>
+          <div class="prob-title">ช่องว่างข้อมูล Real-time</div>
+          <div class="prob-text">นักวิทยาศาสตร์ขาดข้อมูลการแพร่กระจายของสัตว์พิษ ทำให้การวางแผนรับมือล่าช้า</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SLIDE 4 · SOLUTION OVERVIEW -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-4">
+    <div class="slide-number">04 / 10</div>
+    <div class="center content-box">
+      <div class="slide-tag">💡 โซลูชัน</div>
+      <h2>SafeSurf AI เปลี่ยนสมาร์ทโฟนให้เป็น<br/>เครื่องมือเฝ้าระวังทะเล</h2>
+      <div class="grid-2 mt-md">
+        <div class="feat-card">
+          <div class="feat-icon">🤖</div>
+          <div class="feat-title">AI Detection &amp; Alert</div>
+          <div class="feat-desc">AI วิเคราะห์ภาพคลื่น ระบุ Rip Current และแจ้งเตือนทันทีผ่าน Mobile &amp; Smart Watch เมื่อผู้ใช้เข้าใกล้จุดเสี่ยง</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🔍</div>
+          <div class="feat-title">Jellyfish AI Scanner</div>
+          <div class="feat-desc">สแกนภาพแมงกะพรุนด้วย Computer Vision ระบุชนิด ระดับอันตราย และวิธีปฐมพยาบาลที่ถูกต้อง</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🌍</div>
+          <div class="feat-title">Crowdsourcing Network</div>
+          <div class="feat-desc">เปลี่ยนนักท่องเที่ยวเป็น "Citizen Scientists" ส่งรายงานสภาพหาด สร้าง Big Data ให้ AI ฉลาดขึ้นเรื่อยๆ</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">⌚</div>
+          <div class="feat-title">Wearable Integration</div>
+          <div class="feat-desc">เชื่อมต่อกับ Smart Watch แจ้งเตือนได้แม้กำลังทำกิจกรรมอยู่ในน้ำ — ช่วงเวลาที่เปราะบางที่สุด</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SLIDE 5 · OBJECTIVES -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-5">
+    <div class="slide-number">05 / 10</div>
+    <div class="center content-box">
+      <div class="slide-tag">🎯 วัตถุประสงค์</div>
+      <h2>เป้าหมายของโครงการ</h2>
+      <div class="grid-2 mt-md" style="align-items:start">
+        <div class="glass" style="padding:28px;text-align:left">
+          <div style="font-size:2rem;margin-bottom:10px;">🛡️</div>
+          <h3 style="color:#fff;margin-bottom:10px;">ความปลอดภัย</h3>
+          <p>ออกแบบแอปพลิเคชันเฝ้าระวังและแจ้งเตือนภัยล่วงหน้าจาก Rip Current และสัตว์ทะเลมีพิษ ด้วย AI ประมวลผลภาพแบบ Real-time</p>
+        </div>
+        <div class="glass" style="padding:28px;text-align:left">
+          <div style="font-size:2rem;margin-bottom:10px;">🌱</div>
+          <h3 style="color:#fff;margin-bottom:10px;">การอนุรักษ์ (SDG 14)</h3>
+          <p>สร้างเครือข่าย Citizen Science ติดตามสภาพแวดล้อมทางทะเล ลดความขัดแย้งระหว่างคนกับสัตว์ทะเล และส่งเสริมการใช้ชายฝั่งอย่างยั่งยืน</p>
+        </div>
+      </div>
+      <div class="sdg-badge mt-md" style="display:inline-flex">
+        <span>🌊</span>
+        <span>SDG Goal 14 – Life Below Water</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SLIDE 6 · USER JOURNEY -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-6">
+    <div class="slide-number">06 / 10</div>
+    <div class="center content-box">
+      <div class="slide-tag">🚶 วิธีใช้งาน (User Journey)</div>
+      <h2>4 ขั้นตอนง่ายๆ เพื่อทะเลที่ปลอดภัย</h2>
+      <ul class="step-list mt-md" style="text-align:left;max-width:700px;margin:0 auto">
+        <li>
+          <div class="step-num">1</div>
+          <div><strong style="color:var(--foam)">Check &amp; Plan</strong><br/>
+          <span style="font-size:.9rem">เปิด Live Beach Map เช็กจุดเสี่ยง Rip Current และระดับความปลอดภัยของหาดแบบ Real-time ก่อนลงน้ำ</span></div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div><strong style="color:var(--foam)">Scan &amp; Protect</strong><br/>
+          <span style="font-size:.9rem">ใช้กล้องสแกนสัตว์ทะเลผ่าน AI เพื่อระบุชนิดและวิธีปฐมพยาบาล ป้องกันการทำร้ายสัตว์ทะเลด้วยความเข้าใจผิด</span></div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div><strong style="color:var(--foam)">Report &amp; Contribute</strong><br/>
+          <span style="font-size:.9rem">รายงานพิกัดขยะหรือสัตว์หายากผ่านระบบ Crowdsourcing สร้าง Big Data ให้หน่วยงานฟื้นฟูระบบนิเวศได้ตรงจุด</span></div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div><strong style="color:var(--foam)">Real-time Alert</strong><br/>
+          <span style="font-size:.9rem">ระบบแจ้งเตือนกะทันหันผ่านสมาร์ทโฟนและ Smart Watch เมื่อตรวจพบความเสี่ยงในระยะใกล้</span></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SLIDE 7 · FEATURES -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-7">
+    <div class="slide-number">07 / 10</div>
+    <div class="center content-box" style="max-width:1020px">
+      <div class="slide-tag">⚙️ ฟีเจอร์หลัก</div>
+      <h2>4 ฟีเจอร์ที่ทำให้ SafeSurf AI แตกต่าง</h2>
+      <div class="grid-4 mt-md">
+        <div class="feat-card">
+          <div class="feat-icon">🌊</div>
+          <div class="feat-title">AI Rip Current Detector</div>
+          <div class="feat-desc">วิเคราะห์ภาพจากกล้องมือถือ ระบุพิกัดอันตรายใต้ผิวน้ำที่ตาเปล่ามองไม่เห็น แจ้งเตือนทันที</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🎐</div>
+          <div class="feat-title">Jellyfish Scanner</div>
+          <div class="feat-desc">Computer Vision จำแนกสายพันธุ์แมงกะพรุนพิษ บอกระดับอันตรายและวิธีปฐมพยาบาลที่ถูกต้อง</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🗺️</div>
+          <div class="feat-title">Real-time Eco-Safety Map</div>
+          <div class="feat-desc">แผนที่ดิจิทัลรวมข้อมูลดาวเทียมและชุมชน แสดงจุดเสี่ยงและสิ่งมีชีวิตหายาก</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📝</div>
+          <div class="feat-title">Citizen Science Data Log</div>
+          <div class="feat-desc">บันทึกภาพ+พิกัดขยะ/สัตว์เกยตื้น ส่งเป็น Data ให้นักวิจัย พร้อมระบบสะสมแต้มแลกรางวัล</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SLIDE 8 · TECHNICAL DESIGN -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-8">
+    <div class="slide-number">08 / 10</div>
+    <div class="center content-box">
+      <div class="slide-tag">🛠️ เทคโนโลยีที่ใช้</div>
+      <h2>Tech Stack &amp; Architecture</h2>
+      <div class="tech-row mt-md">
+        <div class="tech-pill">🌐 HTML5 + CSS3 (Tailwind)</div>
+        <div class="tech-pill">⚡ JavaScript ES6+</div>
+        <div class="tech-pill">🧠 TensorFlow.js (On-device AI)</div>
+        <div class="tech-pill">🔥 Firebase Hosting + Firestore</div>
+        <div class="tech-pill">🗺️ Leaflet.js / Google Maps API</div>
+        <div class="tech-pill">📡 Crowdsourced Real-time Data</div>
+      </div>
+      <div class="glass mt-md" style="padding:24px;text-align:left;max-width:820px;margin:24px auto 0">
+        <h3 style="margin-bottom:14px;">🔄 ระบบทำงานอย่างไร?</h3>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;">
+          <div style="text-align:center;font-size:.85rem;color:rgba(255,255,255,.85)">
+            📷<br/>กล้องมือถือ
+          </div>
+          <div style="color:var(--foam);font-size:1.4rem">→</div>
+          <div style="text-align:center;font-size:.85rem;color:rgba(255,255,255,.85)">
+            🧠<br/>TensorFlow.js<br/><span style="font-size:.75rem;color:var(--foam)">(On-device)</span>
+          </div>
+          <div style="color:var(--foam);font-size:1.4rem">→</div>
+          <div style="text-align:center;font-size:.85rem;color:rgba(255,255,255,.85)">
+            📊<br/>Firestore DB
+          </div>
+          <div style="color:var(--foam);font-size:1.4rem">→</div>
+          <div style="text-align:center;font-size:.85rem;color:rgba(255,255,255,.85)">
+            🗺️<br/>Live Map<br/>Update
+          </div>
+          <div style="color:var(--foam);font-size:1.4rem">→</div>
+          <div style="text-align:center;font-size:.85rem;color:rgba(255,255,255,.85)">
+            🔔<br/>แจ้งเตือน<br/>ผู้ใช้
+          </div>
+        </div>
+        <p style="margin-top:14px;font-size:.82rem;color:rgba(255,255,255,.6);text-align:center">
+          AI ประมวลผลบนอุปกรณ์ (On-device) — ไม่ต้องส่งภาพไป Server ⚡ เร็วกว่าและปลอดภัยกว่า
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SLIDE 9 · IMPACT -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-9">
+    <div class="slide-number">09 / 10</div>
+    <div class="center content-box">
+      <div class="slide-tag">🌱 ผลกระทบที่คาดหวัง</div>
+      <h2>SafeSurf AI สร้างความเปลี่ยนแปลงอะไร?</h2>
+      <div class="col mt-md" style="max-width:760px;margin:0 auto;gap:12px">
+        <div class="impact-card">
+          <strong style="color:var(--accent)">🛡️ ลดการสูญเสีย</strong>
+          <p style="font-size:.9rem;margin-top:4px">ระบบเตือนภัยล่วงหน้าช่วยลดอัตราการจมน้ำและการบาดเจ็บจากแมงกะพรุนพิษอย่างเป็นรูปธรรม</p>
+        </div>
+        <div class="impact-card blue">
+          <strong style="color:var(--sky)">📊 Big Data เพื่อการอนุรักษ์</strong>
+          <p style="font-size:.9rem;margin-top:4px">ผู้ใช้งานกลายเป็น "นักวิทยาศาสตร์พลเมือง" ส่งข้อมูลให้ภาครัฐวางแผนฟื้นฟูระบบนิเวศได้แม่นยำ (SDG 14)</p>
+        </div>
+        <div class="impact-card green">
+          <strong style="color:var(--green)">🐠 ลดความขัดแย้งคน-ทะเล</strong>
+          <p style="font-size:.9rem;margin-top:4px">การระบุสายพันธุ์ที่ถูกต้องลดความกลัวที่นำไปสู่การทำลายสิ่งมีชีวิตในทะเลโดยไม่ตั้งใจ</p>
+        </div>
+        <div class="impact-card foam">
+          <strong style="color:var(--foam)">🏆 กระตุ้นจิตสำนึกรักษ์โลก</strong>
+          <p style="font-size:.9rem;margin-top:4px">ระบบ Reward สะสมแต้มจูงใจให้คนเปลี่ยนพฤติกรรม ใช้ Reef-Safe Sunscreen และลดขยะพลาสติก</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- SLIDE 10 · CLOSING -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-10">
+    <div class="slide-number">10 / 10</div>
+    <div class="waves">
+      <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg">
+        <path fill="rgba(255,255,255,.05)" d="M0,40L60,37.3C120,35,240,29,360,34.7C480,40,600,56,720,58.7C840,61,960,51,1080,45.3C1200,40,1320,40,1380,40L1440,40V120H0Z"/>
+      </svg>
+    </div>
+    <div class="center" style="position:relative;z-index:1">
+      <div class="slide-tag">🌊 สรุป</div>
+      <div class="app-logo" style="font-size:3.6rem">SafeSurf AI</div>
+      <p class="app-sub" style="max-width:600px;margin:14px auto 0">
+        เปลี่ยนสมาร์ทโฟนทุกเครื่องให้เป็น<br/>
+        <strong style="color:#fff">"เกราะป้องกันชายฝั่ง"</strong> ด้วยพลัง AI และวิทยาศาสตร์พลเมือง
+      </p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:32px">
+        <div style="text-align:center">
+          <div style="font-size:2rem">🌊</div>
+          <div style="font-size:.85rem;color:var(--foam);margin-top:4px">Rip Current</div>
+          <div style="font-size:.85rem;color:rgba(255,255,255,.7)">Detection</div>
+        </div>
+        <div style="color:rgba(255,255,255,.2);font-size:2rem;align-self:center">+</div>
+        <div style="text-align:center">
+          <div style="font-size:2rem">🎐</div>
+          <div style="font-size:.85rem;color:var(--foam);margin-top:4px">Jellyfish</div>
+          <div style="font-size:.85rem;color:rgba(255,255,255,.7)">AI Scanner</div>
+        </div>
+        <div style="color:rgba(255,255,255,.2);font-size:2rem;align-self:center">+</div>
+        <div style="text-align:center">
+          <div style="font-size:2rem">🌍</div>
+          <div style="font-size:.85rem;color:var(--foam);margin-top:4px">Citizen</div>
+          <div style="font-size:.85rem;color:rgba(255,255,255,.7)">Science</div>
+        </div>
+        <div style="color:rgba(255,255,255,.2);font-size:2rem;align-self:center">=</div>
+        <div style="text-align:center">
+          <div style="font-size:2rem">🛡️</div>
+          <div style="font-size:.85rem;color:var(--accent);margin-top:4px;font-weight:700">Safer</div>
+          <div style="font-size:.85rem;color:var(--accent);font-weight:700">Oceans</div>
+        </div>
+      </div>
+      <div class="sdg-badge mt-md" style="display:inline-flex">
+        <span>🌊</span><span>SDG 14 – Life Below Water</span>
+      </div>
+      <div style="margin-top:30px;color:rgba(255,255,255,.4);font-size:.85rem">
+        ทีม "คุณย่าเคยพูดเอาไว้" &nbsp;·&nbsp; โรงเรียนขอนแก่นวิทยายน &nbsp;·&nbsp; 2568
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAVIGATION -->
+<nav class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">‹</button>
+  <span class="counter" id="counter">1 / 10</span>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">›</button>
+</nav>
+
+<script>
+  const TOTAL = 10;
+  let current = 1;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    const prev = document.getElementById('slide-' + current);
+    prev.classList.remove('active');
+    prev.classList.add('exit');
+    setTimeout(() => prev.classList.remove('exit'), 550);
+
+    current = Math.max(1, Math.min(TOTAL, n));
+
+    document.getElementById('slide-' + current).classList.add('active');
+
+    // Dots
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i + 1 === current);
+    });
+
+    // Counter
+    document.getElementById('counter').textContent = current + ' / ' + TOTAL;
+
+    // Progress bar
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  function changeSlide(dir) { goTo(current + dir); }
+
+  // Init first slide
+  document.getElementById('slide-1').classList.add('active');
+  document.getElementById('progressBar').style.width = '0%';
+
+  // Keyboard nav
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ')  changeSlide(1);
+    if (e.key === 'ArrowLeft')  changeSlide(-1);
+  });
+
+  // Touch / swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+  });
+</script>
+</body>
+</html>
